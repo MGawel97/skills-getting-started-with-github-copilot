@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Clear loading message
       activitiesList.innerHTML = "";
+      activitySelect.querySelectorAll("option:not(:first-child)").forEach((option) => option.remove());
 
       // Populate activities list
       Object.entries(activities).forEach(([name, details]) => {
@@ -24,8 +25,19 @@ document.addEventListener("DOMContentLoaded", () => {
           <h4>${name}</h4>
           <p>${details.description}</p>
           <p><strong>Schedule:</strong> ${details.schedule}</p>
-          <p><strong>Availability:</strong> ${spotsLeft} spots left</p>
+          <p class="availability"><strong>Availability:</strong> <span>${spotsLeft} spots left</span></p>
+          <div class="participants-section">
+            <h5>Participants <span class="participant-count">(${details.participants.length})</span></h5>
+            <ul class="participant-list"></ul>
+          </div>
         `;
+
+        const participantsList = activityCard.querySelector(".participant-list");
+        details.participants.forEach((participant) => {
+          const listItem = document.createElement("li");
+          listItem.textContent = participant;
+          participantsList.appendChild(listItem);
+        });
 
         activitiesList.appendChild(activityCard);
 
@@ -59,6 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const result = await response.json();
 
       if (response.ok) {
+        await fetchActivities();
         messageDiv.textContent = result.message;
         messageDiv.className = "success";
         signupForm.reset();
